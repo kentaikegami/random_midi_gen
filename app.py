@@ -182,13 +182,15 @@ def generate_music():
             notes = parse_midi(midi_file_path)
             session['midi_file'] = midi_file_path
             session['wav_file'] = wav_file_path
-            print(notes)
+            print(f"session['wav_file']: {session['wav_file']}")
             # WAVファイルの実際のパスを返すように変更
             print(wav_file_path)
             return jsonify({'wav_file': wav_file_path, 'midi_file': '/download/midi', 'notes': notes})
         else:
+            print("Failed to generate WAV file")
             return jsonify({'error': 'Failed to generate WAV file'}), 500
     else:
+        print("Failed to generate MIDI file")
         return jsonify({'error': 'Failed to generate MIDI file'}), 500
 
 @app.route('/random.wav')
