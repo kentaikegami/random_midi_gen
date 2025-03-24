@@ -19,6 +19,9 @@ if allowed_origins:
 else:
     CORS(app)  # すべてのオリジンを許可 (開発用)
 
+# ポートを環境変数から取得
+port = int(os.environ.get('PORT', 5001))
+
 def generate_random_midi(scale, base_note, filename_prefix):
     # ファイル名に時分秒とランダム文字列を追加
     timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -70,14 +73,20 @@ def generate_wav(midi_file, wav_file_prefix):
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     wav_file = f"{wav_file_prefix}_{timestamp}_{random_str}.wav"
+import os
+
+def generate_wav(midi_file, wav_file_prefix):
+    # ファイル名に時分秒とランダム文字列を追加
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    wav_file = f"{wav_file_prefix}_{timestamp}_{random_str}.wav"
     try:
-        subprocess.run(["timidity", midi_file, "-Ow", "-o", wav_file], check=True)
+        result = subprocess.run(["timidity", midi_file, "-Ow", "-o", wav_file], check=True, capture_output=True, text=True)
         print(f"WAV file '{wav_file}' created.")
-        return wav_file
+        return os.path.abspath(wav_file) # 絶対パスを返す
     except subprocess.CalledProcessError as e:
         print(f"MIDI to WAV変換エラー: {e}")
-        # エラー発生時の処理
-        print(f"Error: {e}")
+        print(f"Error: {e.stderr}")
         return None
 
 def parse_midi(midi_file):
@@ -174,19 +183,25 @@ def generate_music():
             session['midi_file'] = midi_file_path
             session['wav_file'] = wav_file_path
             print(notes)
-            return jsonify({'wav_file': '/static/random.wav', 'midi_file': '/download/midi', 'notes': notes})
+            # WAVファイルの実際のパスを返すように変更
+            print(wav_file_path)
+            return jsonify({'wav_file': wav_file_path, 'midi_file': '/download/midi', 'notes': notes})
         else:
             return jsonify({'error': 'Failed to generate WAV file'}), 500
     else:
         return jsonify({'error': 'Failed to generate MIDI file'}), 500
 
-@app.route('/static/random.wav')
+@app.route('/random.wav')
 def get_wav():
+    print("kk")
     try:
-        # WAVファイルを生成した際に使用したファイル名を返す
+        # WAVファイル
+        # を生成した際に使用したファイル名を返す
         if 'wav_file' in session:
+            print("kookk")
             return send_file(session['wav_file'], mimetype="audio/wav", as_attachment=False)
         else:
+            print("kkkkooo")
             return jsonify({'error': 'WAV file not found'}), 404
     except FileNotFoundError:
         return jsonify({'error': 'WAV file not found'}), 404
@@ -195,6 +210,7 @@ def get_wav():
 def download_midi():
     if 'midi_file' in session:
         try:
+            print(session['midi_file'])
             return send_file(
                 session['midi_file'],
                 as_attachment=True,
@@ -224,5 +240,4 @@ def clear_session():
     return jsonify({'message': 'Session cleared'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5000)
-from flask import Flask, render_template, send_file, jsonify, request, session, send_from_directory
+    app.run(debug=True, host="0.0.0.0", port=port)
