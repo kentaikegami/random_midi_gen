@@ -51,7 +51,7 @@
             border: none;
             background-color: transparent;
             margin-bottom: 20px;
-            text-align: left;
+            text-align: center;
         }
 
         .options {
@@ -69,9 +69,6 @@
             border: none;
         }
     </style>
-    <script>
-        const API_URL = "13.228.225.19";
-    </script>
 </head>
 <body>
     <h1>ハナウタ</h1>
@@ -114,16 +111,13 @@
             displayEmptyScore();
 
             generateButton.addEventListener('click', async () => {
-                const response = await fetch(`${API_URL}/generate_music`, {
+                const response = await fetch('http://127.0.0.1:5001/generate_music', {
                     method: 'POST',
                     body: new URLSearchParams({
                         scale: document.getElementById('scaleSelect').value,
                         base_note: document.getElementById('baseNoteSelect').value
                     }),
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRF-Token': 'your-csrf-token-here'
-                    }
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
                 });
 
                 if (!response.ok) {
@@ -137,22 +131,25 @@
                 }
                 if (data.midi_file) {
                     downloadLink.href = data.midi_file;
+                    console.log(data.midi_file)
                     downloadLink.classList.remove("disabled");
                 }
                 if (data.wav_file) {
-                    audioPlayer.src = data.wav_file;
+                    audioPlayer.src = '/random.wav';
+                    console.log(data.wav_file)
                     audioPlayer.play();
                 }
             });
 
             function displayEmptyScore() {
-                const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n|z4 z4|`;
-                ABCJS.renderAbc("score", abcString, { add_classes: true });
+                const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n|z4 z4 z4 z4 z4 z4|`;
+                ABCJS.renderAbc("score", abcString);
             }
 
             function displayScore(notes) {
-                const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n|${notes.join(" ")}|`;
-                ABCJS.renderAbc("score", abcString, { staffwidth: 200 });
+                const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n${notes.join(" ")}`;
+                console.log(abcString)
+                ABCJS.renderAbc("score", abcString);
             }
         });
     </script>
