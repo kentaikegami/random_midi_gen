@@ -147,9 +147,37 @@
             }
 
             function displayScore(notes) {
-                const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n${notes.join(" ")}`;
+                const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n${convertToABC(notes)}`;
                 console.log(abcString)
                 ABCJS.renderAbc("score", abcString);
+            }
+
+            function convertToABC(notes) {
+                const durationMap = { 'q': "1/4", 'h': "1/2", 'w': "1" };
+                const noteMap = { 
+                    "A": "A", "A#": "^A", "Bb": "_B", "B": "B",
+                    "C": "C", "C#": "^C", "Db": "_D", "D": "D",
+                    "D#": "^D", "Eb": "_E", "E": "E", "F": "F",
+                    "F#": "^F", "Gb": "_G", "G": "G", "G#": "^G"
+                };
+
+                let abcNotes = notes.map(note => {
+                    let [pitch, duration] = note.split(",");
+                    let [noteName, octave] = pitch.split("/");
+                    let abcNote = noteMap[noteName] || noteName;
+                    let abcOctave = parseInt(octave, 10) - 4;
+                    let abcDuration = durationMap[duration] || "1/4";
+
+                    if (abcOctave > 0) {
+                        abcNote = abcNote.toLowerCase().repeat(abcOctave);
+                    } else if (abcOctave < 0) {
+                        abcNote = ",".repeat(Math.abs(abcOctave)) + abcNote;
+                    }
+
+                    return abcNote + abcDuration;
+                });
+
+                return abcNotes.join(" ");
             }
         });
     </script>
