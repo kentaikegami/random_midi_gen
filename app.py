@@ -181,7 +181,7 @@ def generate_music():
         if wav_file_path:
             notes = parse_midi(midi_file_path)
             session['midi_file'] = midi_file_path
-            session['wav_file'] = wav_file_path
+            session['wav_file'] = os.path.abspath(wav_file_path)
             print(f"session['wav_file']: {session['wav_file']}")
             # WAVファイルの実際のパスを返すように変更
             print(wav_file_path)
