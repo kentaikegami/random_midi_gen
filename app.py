@@ -73,13 +73,6 @@ def generate_wav(midi_file, wav_file_prefix):
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     wav_file = f"{wav_file_prefix}_{timestamp}_{random_str}.wav"
-import os
-
-def generate_wav(midi_file, wav_file_prefix):
-    # ファイル名に時分秒とランダム文字列を追加
-    timestamp = time.strftime("%Y%m%d_%H%M%S")
-    random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-    wav_file = f"{wav_file_prefix}_{timestamp}_{random_str}.wav"
     print(f"Generating WAV file: {wav_file}")  # WAVファイル生成前のログ
     try:
         result = subprocess.run(["timidity", midi_file, "-Ow", "-o", wav_file], check=True, capture_output=True, text=True)
@@ -89,6 +82,7 @@ def generate_wav(midi_file, wav_file_prefix):
     except subprocess.CalledProcessError as e:
         print(f"MIDI to WAV変換エラー: {e}")
         print(f"Error: {e.stderr}")
+        print("WAVファイルの生成に失敗しました")  # エラーログ
         return None
 
 def parse_midi(midi_file):
@@ -185,13 +179,11 @@ def generate_music():
             session['midi_file'] = midi_file_path
             session['wav_file'] = os.path.abspath(wav_file_path)
             print(f"session['wav_file']: {session['wav_file']}")
-            print(f"WAV file path saved to session: {session['wav_file']}")  # セッション保存のログ
             # WAVファイルの実際のパスを返すように変更
             print(wav_file_path)
             return jsonify({'wav_file': wav_file_path, 'midi_file': '/download/midi', 'notes': notes})
         else:
             print("Failed to generate WAV file")
-            print("WAV file generation failed")  # WAVファイル生成失敗のログ
             return jsonify({'error': 'Failed to generate WAV file'}), 500
     else:
         print("Failed to generate MIDI file")
