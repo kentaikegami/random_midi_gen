@@ -80,9 +80,11 @@ def generate_wav(midi_file, wav_file_prefix):
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
     wav_file = f"{wav_file_prefix}_{timestamp}_{random_str}.wav"
+    print(f"Generating WAV file: {wav_file}")  # WAVファイル生成前のログ
     try:
         result = subprocess.run(["timidity", midi_file, "-Ow", "-o", wav_file], check=True, capture_output=True, text=True)
         print(f"WAV file '{wav_file}' created.")
+        print(f"WAV file generation result: {result}")  # WAVファイル生成後のログ
         return os.path.abspath(wav_file) # 絶対パスを返す
     except subprocess.CalledProcessError as e:
         print(f"MIDI to WAV変換エラー: {e}")
@@ -201,7 +203,14 @@ def get_wav():
         # を生成した際に使用したファイル名を返す
         if 'wav_file' in session:
             print("kookk")
-            return send_file(session['wav_file'], mimetype="audio/wav", as_attachment=False)
+            wav_file_path = session['wav_file']
+            print(f"Attempting to send file: {wav_file_path}")  # ファイルパスのログ
+            if os.path.exists(wav_file_path):
+                print("File exists, sending...")  # ファイル存在のログ
+                return send_file(wav_file_path, mimetype="audio/wav", as_attachment=False)
+            else:
+                print("File not found, even though it's in session")  # ファイルが存在しない場合のログ
+                return jsonify({'error': 'WAV file not found'}), 404
         else:
             print("kkkkooo")
             return jsonify({'error': 'WAV file not found'}), 404
