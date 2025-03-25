@@ -65,23 +65,23 @@ def generate_random_midi(scale, base_note, filename_prefix):
         prev_note = note
 
     mid.save(filename)
-    print(f"MIDI file '{filename}' created.")
+    print(f"MIDI file '{{filename}}' created.")
     return filename
 
 def generate_wav(midi_file, wav_file_prefix):
     # ファイル名に時分秒とランダム文字列を追加
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-    wav_file = f"{wav_file_prefix}_{timestamp}_{random_str}.wav"
-    print(f"Generating WAV file: {wav_file}")  # WAVファイル生成前のログ
+    wav_file = f"{{wav_file_prefix}}_{timestamp}_{random_str}.wav"
+    print(f"Generating WAV file: {{wav_file}}")  # WAVファイル生成前のログ
     try:
         result = subprocess.run(["timidity", midi_file, "-Ow", "-o", wav_file], check=True, capture_output=True, text=True)
-        print(f"WAV file '{wav_file}' created.")
-        print(f"WAV file generation result: {result}")  # WAVファイル生成後のログ
+        print(f"WAV file '{{wav_file}}' created.")
+        print(f"WAV file generation result: {{result}}")  # WAVファイル生成後のログ
         return os.path.abspath(wav_file) # 絶対パスを返す
     except subprocess.CalledProcessError as e:
-        print(f"MIDI to WAV変換エラー: {e}")
-        print(f"Error: {e.stderr}")
+        print(f"MIDI to WAV変換エラー: {{e}}")
+        print(f"Error: {{e.stderr}}")
         print("WAVファイルの生成に失敗しました")  # エラーログ
         return None
 
@@ -94,10 +94,10 @@ def parse_midi(midi_file):
                 if msg.type == 'note_off':
                     note_name = notetoname(msg.note)
                     note_duration = noteduration(msg.time)
-                    notes.append(f"{note_name}/4,{note_duration}")  # 例: C/4, D#/5
+                    notes.append(f"{{note_name}}/4,{{note_duration}}")  # 例: C/4, D#/5
         return notes
     except Exception as e:
-        print(f"MIDI解析エラー: {e}")
+        print(f"MIDI解析エラー: {{e}}")
         return None
 
 def notetoname(note):
@@ -173,7 +173,8 @@ def generate_music():
             except FileNotFoundError:
                 pass
             session.pop('wav_file', None)
-        print(wav_file_path)
+        
+        wav_file_path = None  # 初期化
         print("generate_wav関数を呼び出します")  # ログ
         wav_file_path = generate_wav(midi_file_path, wav_file_prefix)
 
