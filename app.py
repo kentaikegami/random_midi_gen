@@ -146,6 +146,7 @@ def index():
 
 @app.route('/generate_music', methods=['POST'])
 def generate_music():
+    print("generate_music関数が呼び出されました")  # ログ
     scale = request.form.get('scale', 'major')
     base_note = request.form.get('base_note', 'C')
     # 音名の文字列をMIDIノート番号に変換
@@ -172,6 +173,8 @@ def generate_music():
             except FileNotFoundError:
                 pass
             session.pop('wav_file', None)
+        print(wav_file_path)
+        print("generate_wav関数を呼び出します")  # ログ
         wav_file_path = generate_wav(midi_file_path, wav_file_prefix)
 
         if wav_file_path:
