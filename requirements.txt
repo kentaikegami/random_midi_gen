@@ -2,3 +2,4 @@ Flask
 mido
 Flask-Cors
 gunicorn
+timidity
