@@ -198,6 +198,7 @@ def generate_music():
 @app.route('/random.wav')
 def get_wav():
     print("kk")
+    print("random.wavにアクセスがありました")  # アクセスログ
     try:
         # WAVファイル
         # を生成した際に使用したファイル名を返す
@@ -213,8 +214,10 @@ def get_wav():
                 return jsonify({'error': 'WAV file not found'}), 404
         else:
             print("kkkkooo")
+            print("セッションにwav_fileが存在しません")  # セッションログ
             return jsonify({'error': 'WAV file not found'}), 404
     except FileNotFoundError:
+        print("FileNotFoundErrorが発生しました")  # エラーログ
         return jsonify({'error': 'WAV file not found'}), 404
 
 @app.route('/download/midi')
