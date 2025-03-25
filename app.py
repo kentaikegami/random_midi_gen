@@ -185,11 +185,13 @@ def generate_music():
             session['midi_file'] = midi_file_path
             session['wav_file'] = os.path.abspath(wav_file_path)
             print(f"session['wav_file']: {session['wav_file']}")
+            print(f"WAV file path saved to session: {session['wav_file']}")  # セッション保存のログ
             # WAVファイルの実際のパスを返すように変更
             print(wav_file_path)
             return jsonify({'wav_file': wav_file_path, 'midi_file': '/download/midi', 'notes': notes})
         else:
             print("Failed to generate WAV file")
+            print("WAV file generation failed")  # WAVファイル生成失敗のログ
             return jsonify({'error': 'Failed to generate WAV file'}), 500
     else:
         print("Failed to generate MIDI file")
