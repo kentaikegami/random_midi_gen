@@ -1,5 +1,7 @@
-Flask
+Flask[async]
+Flask-Session
 mido
 Flask-Cors
 gunicorn
 timidity
+pydub
