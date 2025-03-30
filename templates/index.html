@@ -37,13 +37,6 @@
             text-align: center;
         }
 
-        .controls a.disabled {
-            background-color: #555;
-            cursor: not-allowed;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
         #score {
             width: 90%;
             max-width: 800px;
@@ -68,15 +61,22 @@
             color: #fff;
             border: none;
         }
+
+        .grayed-out {
+            background-color: #808080 !important;
+            cursor: not-allowed !important;
+        }
     </style>
 </head>
 <body>
     <h1>ハナウタ</h1>
     <div class="controls">
         <button id="generateButton">Generate Music</button>
-        <a id="downloadLink" href="#" download="music.mid" class="disabled">Download MIDI</a>
+        <a id="downloadLink" href="#" download="music.mid" class="disabled grayed-out">Download MIDI</a>
+        <button id="playButton" class="disabled grayed-out">Play Music</button>
+        
     </div>
-    <audio id="audioPlayer" controls></audio>
+
     <div id="score"></div>
     <div class="options">
         <label for="scaleSelect">Scale:</label>
@@ -105,13 +105,17 @@
         document.addEventListener("DOMContentLoaded", function () {
             const generateButton = document.getElementById('generateButton');
             const downloadLink = document.getElementById('downloadLink');
+            const playButton = document.getElementById('playButton');
             const scoreDiv = document.getElementById('score');
-            const audioPlayer = document.getElementById('audioPlayer');
+            let audioContext = null;
+            let currentSource = null;  // 再生中の音源を管理する変数
+            let audioBuffer;
 
             displayEmptyScore();
 
             generateButton.addEventListener('click', async () => {
-                const response = await fetch('/generate_music', {
+
+                const response = await fetch('http://localhost:5001/generate_music', {
                     method: 'POST',
                     body: new URLSearchParams({
                         scale: document.getElementById('scaleSelect').value,
@@ -127,19 +131,84 @@
 
                 const data = await response.json();
                 if (data.notes) {
+                    console.log("call displayscore")
                     displayScore(data.notes);
                 }
                 if (data.midi_file) {
                     downloadLink.href = data.midi_file;
-                    console.log(data.midi_file)
                     downloadLink.classList.remove("disabled");
+                    downloadLink.classList.remove("grayed-out");
                 }
-                if (data.wav_file) {
-                    audioPlayer.src = '/random.wav';
-                    console.log(data.wav_file)
-                    audioPlayer.play();
+                if (data.wav_file === 'mp3_file') {
+                    playButton.classList.remove("disabled");
+                    playButton.classList.remove("grayed-out");
                 }
+                await playMp3File();
             });
+
+            playButton.addEventListener('click', async () => {
+                console.log("playbutton push")
+                await playMp3File();
+            });
+                
+
+
+            async function playMp3File() {
+                try {
+                    console.log("⚫︎playmp3file");
+
+                    // 既に再生中なら停止
+                    if (currentSource) {
+                        console.log("Stopping previous audio");
+                        currentSource.stop();
+                        currentSource.disconnect();
+                        currentSource = null;
+                    }
+
+                    // AudioContext を一度だけ作成し、再利用する
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+
+                    // キャッシュ回避用のクエリをつけてMP3を取得
+                    const timestamp = new Date().getTime();
+                    const response = await fetch(`http://localhost:5001/random.mp3?${timestamp}`);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP status ${response.status}`);
+                    }
+
+                    const arrayBuffer = await response.arrayBuffer();
+
+                    // decodeAudioData のエラーハンドリング
+                    audioContext.decodeAudioData(arrayBuffer, (buffer) => {
+                    console.log("Audio decoded successfully");
+
+                    // 新しい音源を作成
+                    const source = audioContext.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(audioContext.destination);
+                    source.start();
+
+                    // 現在の音源を保存（次回再生時に停止できるように）
+                    currentSource = source;
+
+                    // 再生終了時に currentSource をクリア
+                    source.onended = () => {
+                        console.log("Audio finished playing");
+                        currentSource = null;
+                    };
+
+                    }, (error) => {
+                        console.error("Error decoding MP3 file:", error);
+                        alert("MP3ファイルのデコードに失敗しました: " + error.message);
+                    });
+
+                } catch (error) {
+                    console.error("Error fetching MP3 file:", error);
+                    alert("MP3ファイルのフェッチに失敗しました: " + error.message);
+                }
+            }
 
             function displayEmptyScore() {
                 const abcString = `X:1\nM:4/4\nL:1/4\nK:none\n|z4 z4 z4 z4 z4 z4|`;
@@ -151,9 +220,8 @@
                 console.log(abcString)
                 ABCJS.renderAbc("score", abcString);
             }
-
             function convertToABC(notes) {
-                const durationMap = { 'q': "1/4", 'h': "1/2", 'w': "1" };
+                const durationMap = { 'q': "1/4", 'h': "1/2", "w": "1" };
                 const noteMap = { 
                     "A": "A", "A#": "^A", "Bb": "_B", "B": "B",
                     "C": "C", "C#": "^C", "Db": "_D", "D": "D",
