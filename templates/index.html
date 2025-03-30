@@ -115,7 +115,7 @@
 
             generateButton.addEventListener('click', async () => {
 
-                const response = await fetch('http://localhost:5001/generate_music', {
+                const response = await fetch('/generate_music', {
                     method: 'POST',
                     body: new URLSearchParams({
                         scale: document.getElementById('scaleSelect').value,
@@ -172,7 +172,7 @@
 
                     // キャッシュ回避用のクエリをつけてMP3を取得
                     const timestamp = new Date().getTime();
-                    const response = await fetch(`http://localhost:5001/random.mp3?${timestamp}`);
+                    const response = await fetch(`/random.mp3?${timestamp}`);
 
                     if (!response.ok) {
                         throw new Error(`HTTP status ${response.status}`);
