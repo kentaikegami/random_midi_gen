@@ -1,6 +1,10 @@
-version: "3.9"
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      no_cache: true
     ports:
-      - "5001:5001"
+      - "5001:8000"
+    environment:
+      - PORT=5001

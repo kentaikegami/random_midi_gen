@@ -3,208 +3,451 @@
 <head>
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="G9i_EpglVqPJLEHvjRVmmqChTr3RXQbzz0_vVuroyxg" />
-    <title>Random Music Composition Application</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Music Composition</title>
     <style>
-        h2 {
-            font-size: 10px;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #121212;
-            color: #fff;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #f5f5f7;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+            background: linear-gradient(120deg, #fff 0%, #b0b0b5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #a1a1a6;
+            margin-bottom: 60px;
+            line-height: 1.6;
         }
 
         .controls {
             display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 60px;
         }
 
-        .controls button, .controls a {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: #fff;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        #score {
-            width: 90%;
-            max-width: 800px;
-            height: auto;
-            border: none;
-            background-color: transparent;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .options {
+        .options-group {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         select {
-            padding: 8px;
-            font-size: 16px;
-            border-radius: 5px;
-            background-color: #333;
-            color: #fff;
-            border: none;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #f5f5f7;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            min-width: 160px;
         }
 
-        .grayed-out {
-            background-color: #808080 !important;
-            cursor: not-allowed !important;
+        select:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
         }
-        .amazon-items {
+
+        select:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .buttons-group {
             display: flex;
+            gap: 16px;
             justify-content: center;
-            align-items: flex-start;
-            width: 100%;
-            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
-        .max-w-48 {
-            width: 90px; 
+        button, .download-btn {
+            padding: 14px 32px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 980px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 0.01em;
+            min-width: 160px;
         }
-        img {
-        width: 90px;
-        height: 90px;
-        object-fit: scale-down;
+
+        #generateButton {
+            background: linear-gradient(135deg, #0071e3 0%, #0051ba 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0, 113, 227, 0.3);
+        }
+
+        #generateButton:hover:not(:disabled) {
+            background: linear-gradient(135deg, #0077ed 0%, #0052c3 100%);
+            box-shadow: 0 8px 30px rgba(0, 113, 227, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #generateButton:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        #playButton {
+            background: linear-gradient(135deg, #34c759 0%, #1fa347 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(52, 199, 89, 0.3);
+        }
+
+        #playButton:hover:not(:disabled) {
+            background: linear-gradient(135deg, #3dd865 0%, #219653 100%);
+            box-shadow: 0 8px 30px rgba(52, 199, 89, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #playButton:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .download-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f5f5f7;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-btn:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .download-btn.disabled,
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        #score {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            margin: 20px auto 40px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+
+        #score svg {
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .footer-text {
+            margin-top: 80px;
+            color: #a1a1a6;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .footer-text a {
+            color: #0071e3;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-text a:hover {
+            color: #0077ed;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1rem;
+            }
+
+            .options-group,
+            .buttons-group {
+                flex-direction: column;
+            }
+
+            select,
+            button,
+            .download-btn {
+                width: 100%;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .ads-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 40px;
+            padding: 0 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ad-card {
+            width: 100%;
+            max-width: 120px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ad-card:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .ad-card a {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .ad-image {
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ad-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ad-info {
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .ad-price {
+            font-size: 0.7rem;
+            color: #a1a1a6;
+            text-align: right;
+            margin-bottom: 4px;
+        }
+
+        .ad-title {
+            font-size: 0.65rem;
+            color: #f5f5f7;
+            line-height: 1.2;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ad-button {
+            width: 100%;
+            padding: 4px 6px;
+            font-size: 0.65rem;
+            background-color: #fdaf17;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .ad-button:hover {
+            background-color: #f0a80d;
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .ads-section {
+                gap: 8px;
+            }
+
+            .ad-card {
+                max-width: 100px;
+            }
+
+            .ad-image {
+                height: 70px;
+            }
+
+            .ad-title {
+                font-size: 0.6rem;
+            }
+
+            .ad-price {
+                font-size: 0.65rem;
+            }
+
+            .ad-button {
+                font-size: 0.6rem;
+                padding: 3px 4px;
+            }
         }
     </style>
+
 </head>
 <body>
-    <h1>ランダム　音楽生成ツール</h1>
-    <h2>音楽を自動生成し再生！ MIDI形式でダウンロードも可能<br>Automatic music generation and playback! Also available for download in MIDI format!
-    </h2>
-    <div class="controls">
-        <button id="generateButton">Generate Music</button>
-        <a id="downloadLink" href="#" download="music.mid" class="disabled grayed-out">Download MIDI</a>
-        <button id="playButton" class="disabled grayed-out">Play Music</button>
-        
+    <div class="container">
+        <h1>Random Music</h1>
+        <h2>自動生成される音楽<br>Automatically generated music</h2>
+
+        <div class="controls">
+            <div class="options-group">
+                <select id="scaleSelect">
+                    <option value="major">Major Scale</option>
+                    <option value="minor">Minor Scale</option>
+                </select>
+                <select id="baseNoteSelect">
+                    <option value="48">C3</option>
+                    <option value="60" selected>C4</option>
+                    <option value="72">C5</option>
+                </select>
+            </div>
+
+            <div class="buttons-group">
+                <button id="generateButton">Generate Music</button>
+                <button id="playButton" class="disabled">Play Music</button>
+                <a id="downloadLink" href="#" download="music.mid" class="download-btn disabled">Download MIDI</a>
+            </div>
+        </div>
+
+        <div id="score"></div>
+
+        <div class="footer-text">
+            <p>🎵 Click "Generate Music" to create a new composition<br>
+            🔊 Click "Play Music" to hear your creation<br>
+            💾 Download as MIDI to use in your DAW</p>
+        </div>
     </div>
 
-    <div id="score"></div>
-    <div class="options">
-        <label for="scaleSelect">Scale:</label>
-        <select id="scaleSelect">
-            <option value="major">Major</option>
-            <option value="minor">Minor</option>
-        </select>
-        <label for="baseNoteSelect">Base Note:</label>
-        <select id="baseNoteSelect">
-            <option value="C">C</option>
-            <option value="C#">C#</option>
-            <option value="D">D</option>
-            <option value="D#">D#</option>
-            <option value="E">E</option>
-            <option value="F">F</option>
-            <option value="F#">F#</option>
-            <option value="G">G</option>
-            <option value="G#">G#</option>
-            <option value="A">A</option>
-            <option value="A#">A#</option>
-            <option value="B">B</option>
-        </select>
-    </div>
-    <div class="amazon-items">
-        <div class="max-w-48">
+    <div class="ads-section">
+        <div class="ad-card">
             <a rel="noreferrer noopener nofollow" href="https://amzn.to/4ltqojO" target="_blank">
-                <div class="grid justify-items-center items-center h-52 bg-white">
-                    <img src="https://m.media-amazon.com/images/I/71g8FubyCHL._AC_SX679_.jpg" alt="Akai Professional MIDIキーボードコントローラー 25鍵 8ドラムパッド 音楽制作ソフト MPK Mini MK3" />
+                <div class="ad-image">
+                    <img src="https://m.media-amazon.com/images/I/71g8FubyCHL._AC_SX679_.jpg" alt="Akai Professional MIDI" />
                 </div>
-                <div class="space-y-1">
-                    <div class="text-sm text-right text-foreground">13,213 円</div>
-                    <div class="text-sm line-clamp-3 text-foreground">Akai Professional MIDIキーボードコントローラー</div>
-                    <div class="w-full bg-[#fdaf17] hover:bg-[#fdaf17]/90 text-slate-950 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 rounded-xl">
-                        <button>Amazon</button>
-                    </div>
+                <div class="ad-info">
+                    <div class="ad-title">Akai Professional MIDIキーボード</div>
+                    <button class="ad-button">Amazon</button>
                 </div>
             </a>
         </div>
-        <div class="max-w-48">
+        <div class="ad-card">
             <a rel="noreferrer noopener nofollow" href="https://amzn.to/3Ysz53M" target="_blank">
-                <div class="grid justify-items-center items-center h-52 bg-white">
-                    <img src="https://m.media-amazon.com/images/I/710YN7AfcuL._AC_SX679_.jpg" alt="Akai Professional(アカイプロ) MIDIコントローラー RGBバックライト付きフルサイズ・ベロシティ対応・ドラムパッド16個、アサイナブル・タッチストリップ、カラー液晶ディスプレイ搭載 MPCソフトウェア付属MPC Studio" />
+                <div class="ad-image">
+                    <img src="https://m.media-amazon.com/images/I/710YN7AfcuL._AC_SX679_.jpg" alt="Akai Professional MPC" />
                 </div>
-                <div class="space-y-1">
-                    <div class="text-sm text-right text-foreground">29,800 円</div>
-                    <div class="text-sm line-clamp-3 text-foreground">Akai Professional(アカイプロ) MIDIコントローラー</div>
-                    <div class="w-full bg-[#fdaf17] hover:bg-[#fdaf17]/90 text-slate-950 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 rounded-xl">
-                        <button>Amazon</button>
-                    </div>
+                <div class="ad-info">
+                    <div class="ad-title">Akai Professional MPC Studio</div>
+                    <button class="ad-button">Amazon</button>
                 </div>
             </a>
-        </div> 
-        <div class="max-w-48">
+        </div>
+        <div class="ad-card">
             <a rel="noreferrer noopener nofollow" href="https://amzn.to/4cx31lt" target="_blank">
-                <div class="grid justify-items-center items-center h-52 bg-white">
-                    <img src="https://m.media-amazon.com/images/I/71MgYO+IAYL._AC_SX679_.jpg" alt="オーディオテクニカ ATH₋M20xプロフェッショナルモニターヘッドホン 有線 スタジオレコーディング/楽器練習/ミキシング/DJ/ゲーム/モニターヘッドフォン/有線 【国内正規品】ブラック" />
+                <div class="ad-image">
+                    <img src="https://m.media-amazon.com/images/I/71MgYO+IAYL._AC_SX679_.jpg" alt="Audio Technica Headphones" />
                 </div>
-                <div class="space-y-1">
-                    <div class="text-sm text-right text-foreground">6,973 円</div>
-                    <div class="text-sm line-clamp-3 text-foreground">オーディオテクニカ ATH₋M20xプロフェッショナルモニターヘッドホン</div>
-                    <div class="w-full bg-[#fdaf17] hover:bg-[#fdaf17]/90 text-slate-950 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 rounded-xl">
-                        <button>Amazon</button>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="max-w-48">
-            <a rel="noreferrer noopener nofollow" href="https://amzn.to/4cwXT0w" target="_blank">
-                <div class="grid justify-items-center items-center h-52 bg-white">
-                    <img src="https://m.media-amazon.com/images/I/41woL57YTXL._AC_SX679_.jpg" alt="スタインバーグ Steinberg DAWソフトウェア CUBASE PRO 13 通常版 CUBASE PRO/R 最先端のミックス機能 80種類のオーディオエフェクト搭載" />
-                </div>
-                <div class="space-y-1">
-                    <div class="text-sm text-right text-foreground">59,346 円</div>
-                    <div class="text-sm line-clamp-3 text-foreground">スタインバーグ Steinberg DAWソフトウェア CUBASE PRO 13</div>
-                    <div class="w-full bg-[#fdaf17] hover:bg-[#fdaf17]/90 text-slate-950 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 rounded-xl">
-                        <button>Amazon</button>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="max-w-48">
-            <a rel="noreferrer noopener nofollow" href="https://amzn.to/4j5nZdl" target="_blank">
-                <div class="grid justify-items-center items-center h-52 bg-white">
-                    <img src="https://m.media-amazon.com/images/I/61K8qqqxvDL._AC_SX679_.jpg" alt="初音ミク V4X (incl. ENGLISH)" />
-                </div>
-                <div class="space-y-1">
-                    <div class="text-sm text-right text-foreground">17,600 円</div>
-                    <div class="text-sm line-clamp-3 text-foreground">初音ミク V4X (incl. ENGLISH)</div>
-                    <div class="w-full bg-[#fdaf17] hover:bg-[#fdaf17]/90 text-slate-950 inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 rounded-xl">
-                        <button>Amazon</button>
-                    </div>
+                <div class="ad-info">
+                    <div class="ad-title">オーディオテクニカ ヘッドホン</div>
+                    <button class="ad-button">Amazon</button>
                 </div>
             </a>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.0.0/abcjs-basic-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.0.0/abcjs-basic-min.js?v=1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/midi-parser-js@3.0.2/src/midi-parser.min.js?v=1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsmiddle@1.4.12/jsmiddle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const generateButton = document.getElementById('generateButton');
             const downloadLink = document.getElementById('downloadLink');
             const playButton = document.getElementById('playButton');
             const scoreDiv = document.getElementById('score');
-            let audioContext = null;
-            let currentSource = null;  // 再生中の音源を管理する変数
-            let audioBuffer;
+            let currentSynth = null;
+            let midiData = null;
 
             displayEmptyScore();
 
@@ -237,72 +480,314 @@
                 if (data.wav_file === 'mp3_file') {
                     playButton.classList.remove("disabled");
                     playButton.classList.remove("grayed-out");
+                    console.log("Calling loadMidiFile()");
+                    await loadMidiFile();
+                    console.log("loadMidiFile() completed");
                 }
-                await playMp3File();
             });
 
             playButton.addEventListener('click', async () => {
                 console.log("playbutton push")
-                await playMp3File();
+                await playMidiWithTone();
             });
-                
 
-
-            async function playMp3File() {
+            async function loadMidiFile() {
                 try {
-                    console.log("⚫︎playmp3file");
-
-                    // 既に再生中なら停止
-                    if (currentSource) {
-                        console.log("Stopping previous audio");
-                        currentSource.stop();
-                        currentSource.disconnect();
-                        currentSource = null;
-                    }
-
-                    // AudioContext を一度だけ作成し、再利用する
-                    if (!audioContext) {
-                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-
-                    // キャッシュ回避用のクエリをつけてMP3を取得
                     const timestamp = new Date().getTime();
-                    const response = await fetch(`/random.mp3?${timestamp}`);
-
+                    const url = `/random.mp3?${timestamp}`;
+                    console.log("Loading MIDI file from:", url);
+                    const response = await fetch(url);
+                    
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", {
+                        'content-type': response.headers.get('content-type'),
+                        'content-length': response.headers.get('content-length')
+                    });
+                    
                     if (!response.ok) {
                         throw new Error(`HTTP status ${response.status}`);
                     }
 
-                    const arrayBuffer = await response.arrayBuffer();
+                    midiData = await response.arrayBuffer();
+                    console.log("MIDI file loaded successfully");
+                    console.log("File size:", midiData.byteLength, "bytes");
+                    console.log("First 20 bytes:", new Uint8Array(midiData).slice(0, 20));
+                } catch (error) {
+                    console.error("Error loading MIDI file:", error);
+                    alert("MIDIファイルの読み込みに失敗しました: " + error.message);
+                }
+            }
 
-                    // decodeAudioData のエラーハンドリング
-                    audioContext.decodeAudioData(arrayBuffer, (buffer) => {
-                    console.log("Audio decoded successfully");
+            async function playMidiWithTone() {
+                try {
+                    console.log("Playing MIDI...");
+                    
+                    if (!midiData) {
+                        alert("MIDIファイルがロードされていません");
+                        return;
+                    }
 
-                    // 新しい音源を作成
-                    const source = audioContext.createBufferSource();
-                    source.buffer = buffer;
-                    source.connect(audioContext.destination);
-                    source.start();
+                    // オーディオコンテキストを新規作成
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log("AudioContext created, state:", audioContext.state);
+                    
+                    // suspended の場合は resume
+                    if (audioContext.state === 'suspended') {
+                        try {
+                            await audioContext.resume();
+                            console.log("AudioContext resumed successfully");
+                        } catch (err) {
+                            console.error("Failed to resume AudioContext:", err);
+                        }
+                    }
 
-                    // 現在の音源を保存（次回再生時に停止できるように）
-                    currentSource = source;
+                    console.log("AudioContext state before playback:", audioContext.state);
 
-                    // 再生終了時に currentSource をクリア
-                    source.onended = () => {
-                        console.log("Audio finished playing");
-                        currentSource = null;
-                    };
+                    // MIDI パーサーでデータをパース
+                    console.log("Parsing MIDI...");
+                    
+                    // 複数のパーサーを試す
+                    let parsedMidi = null;
+                    let notes_events = [];
+                    
+                    // 方法1: MidiParser を試す
+                    try {
+                        parsedMidi = MidiParser.parse(new Uint8Array(midiData));
+                        console.log("Method 1 (MidiParser) successful");
+                    } catch (err) {
+                        console.warn("MidiParser failed:", err);
+                    }
+                    
+                    // 方法2: 簡易 MIDI パーサー（フォールバック）
+                    if (!parsedMidi || !parsedMidi.track || parsedMidi.track.length === 0) {
+                        console.log("Using fallback MIDI parser...");
+                        notes_events = parseMidiManually(new Uint8Array(midiData));
+                    } else {
+                        const ticksPerBeat = parsedMidi.header && parsedMidi.header.ticksPerBeat 
+                            ? parsedMidi.header.ticksPerBeat 
+                            : 480;
 
-                    }, (error) => {
-                        console.error("Error decoding MP3 file:", error);
-                        alert("MP3ファイルのデコードに失敗しました: " + error.message);
-                    });
+                        console.log("MIDI parsed successfully, tracks:", parsedMidi.track.length);
+                        console.log("parsedMidi.track:", parsedMidi.track);
+                        
+                        // 最初のトラックをダンプ
+                        if (parsedMidi.track.length > 0) {
+                            const firstTrack = parsedMidi.track[0];
+                            console.log("First track:", firstTrack);
+                            console.log("First track keys:", Object.keys(firstTrack));
+                            
+                            if (firstTrack.event) {
+                                console.log(`First track has ${firstTrack.event.length} events`);
+                                for (let i = 0; i < Math.min(10, firstTrack.event.length); i++) {
+                                    console.log(`  Event[${i}]:`, firstTrack.event[i]);
+                                }
+                            }
+                        }
+                        
+                        // MidiParser の結果をノートイベントに変換
+                        for (let trackIdx = 0; trackIdx < parsedMidi.track.length; trackIdx++) {
+                            const track = parsedMidi.track[trackIdx];
+                            let currentTime = 0;
+                            
+                            if (!track.event) {
+                                console.warn(`Track ${trackIdx} has no event property`);
+                                continue;
+                            }
+                            
+                            for (let eventIdx = 0; eventIdx < track.event.length; eventIdx++) {
+                                const event = track.event[eventIdx];
+                                
+                                // デルタタイムを加算
+                                if (event.deltaTime !== undefined) {
+                                    currentTime += event.deltaTime / (ticksPerBeat * 2);
+                                }
+
+                                // MidiParser は type を十進数で返す (9 = Note On, 8 = Note Off)
+                                const eventType = event.type;
+                                
+                                console.log(`Event ${eventIdx}: type=${eventType}, data=${event.data}`);
+
+                                // Note On イベント (type === 9)
+                                if (eventType === 9) {
+                                    const note = event.data[0];
+                                    const velocity = event.data[1];
+                                    
+                                    console.log(`  -> Note On: note=${note}, velocity=${velocity}`);
+                                    
+                                    if (velocity > 0) {
+                                        notes_events.push({
+                                            note: note,
+                                            time: currentTime,
+                                            duration: 0.4
+                                        });
+                                        console.log(`     Added to notes_events at time ${currentTime}`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (notes_events.length === 0) {
+                        console.warn("No notes found in MIDI!");
+                        alert("警告: MIDI ファイルにノートが見つかりません");
+                        return;
+                    }
+                    
+                    // 再生スケジュール
+                    const startTime = audioContext.currentTime + 0.05;
+                    let maxEndTime = 0;
+                    
+                    console.log(`Scheduling ${notes_events.length} notes...`);
+                    
+                    for (let i = 0; i < notes_events.length; i++) {
+                        const noteEvent = notes_events[i];
+                        const frequency = midiNoteToFrequency(noteEvent.note);
+                        const scheduleTime = startTime + noteEvent.time;
+                        const duration = noteEvent.duration || 0.4;
+                        
+                        console.log(`[${i}] Note ${noteEvent.note} (${frequency}Hz) at ${scheduleTime}s for ${duration}s`);
+                        playNote(audioContext, frequency, scheduleTime, duration);
+                        
+                        maxEndTime = Math.max(maxEndTime, noteEvent.time + duration);
+                    }
+
+                    console.log(`MIDI playback scheduled: ${notes_events.length} notes, duration: ${maxEndTime}s, audioContext.state: ${audioContext.state}`);
 
                 } catch (error) {
-                    console.error("Error fetching MP3 file:", error);
-                    alert("MP3ファイルのフェッチに失敗しました: " + error.message);
+                    console.error("Error playing MIDI:", error);
+                    console.error("Error stack:", error.stack);
+                    alert("MIDI再生エラー: " + error.message);
                 }
+            }
+
+            function playNote(audioContext, frequency, startTime, duration) {
+                try {
+                    const now = audioContext.currentTime;
+                    const actualStartTime = Math.max(startTime, now + 0.005);
+                    const actualDuration = Math.max(duration, 0.05);
+                    const endTime = actualStartTime + actualDuration;
+
+                    // オシレーター作成
+                    const oscillator = audioContext.createOscillator();
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(frequency, actualStartTime);
+
+                    // ゲイン作成（音量エンベロープ）
+                    const gain = audioContext.createGain();
+                    gain.gain.setValueAtTime(0, actualStartTime);
+                    gain.gain.linearRampToValueAtTime(0.3, actualStartTime + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.01, endTime);
+
+                    // 接続
+                    oscillator.connect(gain);
+                    gain.connect(audioContext.destination);
+
+                    // 再生
+                    try {
+                        oscillator.start(actualStartTime);
+                        oscillator.stop(endTime);
+                        console.log(`Oscillator scheduled: ${frequency}Hz, start: ${actualStartTime}s, duration: ${actualDuration}s`);
+                    } catch (startErr) {
+                        console.error("Error starting oscillator:", startErr);
+                    }
+                } catch (error) {
+                    console.error("Error in playNote:", error);
+                }
+            }
+
+            function midiNoteToFrequency(midiNote) {
+                return 440 * Math.pow(2, (midiNote - 69) / 12);
+            }
+
+            function parseMidiManually(midiBytes) {
+                // 簡易 MIDI パーサー（フォールバック）
+                const notes_events = [];
+                
+                try {
+                    let pos = 0;
+                    
+                    // MIDI ファイルヘッダチェック
+                    const header = String.fromCharCode(midiBytes[0], midiBytes[1], midiBytes[2], midiBytes[3]);
+                    if (header !== 'MThd') {
+                        console.error("Not a valid MIDI file (missing MThd header)");
+                        return notes_events;
+                    }
+                    
+                    pos = 14; // ヘッダサイズをスキップ
+                    
+                    // トラックチャンク処理
+                    while (pos < midiBytes.length - 4) {
+                        const trackHeader = String.fromCharCode(midiBytes[pos], midiBytes[pos+1], midiBytes[pos+2], midiBytes[pos+3]);
+                        if (trackHeader !== 'MTrk') {
+                            break;
+                        }
+                        
+                        pos += 4;
+                        const trackLength = (midiBytes[pos] << 24) | (midiBytes[pos+1] << 16) | (midiBytes[pos+2] << 8) | midiBytes[pos+3];
+                        pos += 4;
+                        const trackEnd = pos + trackLength;
+                        
+                        let currentTime = 0;
+                        let ticksPerBeat = 480;
+                        
+                        while (pos < trackEnd && pos < midiBytes.length) {
+                            // デルタタイム読み込み
+                            let deltaTime = 0;
+                            let byte;
+                            do {
+                                byte = midiBytes[pos++];
+                                deltaTime = (deltaTime << 7) | (byte & 0x7F);
+                            } while (byte & 0x80);
+                            
+                            currentTime += deltaTime;
+                            
+                            if (pos >= trackEnd || pos >= midiBytes.length) break;
+                            
+                            const statusByte = midiBytes[pos++];
+                            
+                            // ノートオン (0x90-0x9F)
+                            if ((statusByte >= 0x90 && statusByte <= 0x9F)) {
+                                const note = midiBytes[pos++];
+                                const velocity = midiBytes[pos++];
+                                
+                                if (velocity > 0) {
+                                    notes_events.push({
+                                        note: note,
+                                        time: currentTime / (ticksPerBeat * 2),
+                                        duration: 0.4
+                                    });
+                                    console.log(`Manual parse - Note On: ${note} at time ${currentTime}`);
+                                }
+                            }
+                            // ノートオフ (0x80-0x8F)
+                            else if ((statusByte >= 0x80 && statusByte <= 0x8F)) {
+                                pos += 2; // note, velocity
+                            }
+                            // その他のメッセージ
+                            else if (statusByte === 0xFF) {
+                                const metaType = midiBytes[pos++];
+                                let length = 0;
+                                let byte;
+                                do {
+                                    byte = midiBytes[pos++];
+                                    length = (length << 7) | (byte & 0x7F);
+                                } while (byte & 0x80);
+                                pos += length;
+                            }
+                            else if ((statusByte & 0xF0) === 0xB0 || (statusByte & 0xF0) === 0xC0) {
+                                // その他のチャンネルメッセージ
+                                const dataBytes = (statusByte & 0xF0) === 0xC0 || (statusByte & 0xF0) === 0xD0 ? 1 : 2;
+                                pos += dataBytes;
+                            }
+                        }
+                    }
+                    
+                    console.log(`Manual MIDI parser found ${notes_events.length} notes`);
+                } catch (err) {
+                    console.error("Error in parseMidiManually:", err);
+                }
+                
+                return notes_events;
             }
 
             function displayEmptyScore() {

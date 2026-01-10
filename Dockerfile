@@ -1,13 +1,11 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-slim
 
 WORKDIR /app
 
 COPY requirements.txt .
-RUN apt-get update && apt-get install -y gcc libasound2-dev
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
 RUN pip install -r requirements.txt
-
-RUN apt-get install -y timidity libsndfile1 ffmpeg lame python3-pydub
 
 COPY . .
 
